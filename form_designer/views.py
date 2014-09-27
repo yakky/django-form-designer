@@ -52,7 +52,7 @@ def process_form(request, form_definition, extra_context={}, disable_redirection
             if form_definition.mail_to:
                 form_definition.send_mail(form, files)
             if form_definition.success_redirect and not disable_redirection:
-                return HttpResponseRedirect(form_definition.action or '?')
+                return HttpResponseRedirect(form_definition.redirect_url or form_definition.action or '?')
             if form_definition.success_clear:
                 form = DesignedForm(form_definition) # clear form
         else:
