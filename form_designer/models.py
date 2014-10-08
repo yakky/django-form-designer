@@ -212,6 +212,7 @@ class FormDefinitionField(models.Model):
     choice_model_choices = settings.CHOICE_MODEL_CHOICES
     choice_model = ModelNameField(_('data model'), max_length=255, blank=True, null=True, choices=choice_model_choices, help_text=('your_app.models.ModelName' if not choice_model_choices else None))
     choice_model_empty_label = models.CharField(_('empty label'), max_length=255, blank=True, null=True)
+    choice_model_queryset = models.CharField(_('manager'), max_length=255, blank=True, null=True, default='objects')
 
     class Meta:
         verbose_name = _('field')
@@ -284,8 +285,10 @@ class FormDefinitionField(models.Model):
                 })
 
         if self.field_class in ('django.forms.ModelChoiceField', 'django.forms.ModelMultipleChoiceField'):
+            model_class = ModelNameField.get_model_from_string(self.choice_model)
+            manager_class = getattr(model_class, self.choice_model_queryset)
             args.update({
-                'queryset': ModelNameField.get_model_from_string(self.choice_model).objects.all()
+                'queryset': manager_class.all()
             })
 
         if self.field_class == 'django.forms.ModelChoiceField':
